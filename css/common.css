@@ -1,0 +1,146 @@
+@charset "UTF-8";
+html, body, div, span, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+abbr, address, cite, code,
+del, dfn, em, img, ins, kbd, q, samp,
+small, strong, sub, sup, var,
+b, i,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+footer, header, menu, nav, section {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    vertical-align: baseline;
+    background: transparent;
+    -webkit-text-size-adjust: none;
+    -ms-text-size-adjust: none;
+}
+
+html {
+    width: 100%;
+    font-size: 18px;
+    touch-action: manipulation;
+}
+
+@media only screen and (min-width: 320px) {
+    html {
+        font-size: 19px !important;
+    }
+}
+
+@media only screen and (min-width: 375px) {
+    html {
+        font-size: 20px !important;
+    }
+}
+
+@media only screen and (min-width: 400px) {
+    html {
+        font-size: 21.33333333px !important;
+    }
+}
+
+@media only screen and (min-width: 414px) {
+    html {
+        font-size: 22.08px !important;
+    }
+}
+
+@media only screen and (min-width: 480px) {
+    html {
+        font-size: 25.6px !important;
+    }
+}
+
+body {
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    -webkit-user-select: none; /* 禁止选中文本（如无文本选中需求，此为必选项） */
+    user-select: none;
+    font-size: 0.85rem;
+    width: 100%;
+    background: #373b3e;
+    font-family: ArialUnicodeMS, "Microsoft YaHei", Arial, "Helvetica Neue", Helvetica, sans-serif;
+}
+
+ul, nav {
+    list-style-type: none;
+    vertical-align: 0
+}
+
+a, input, button, select, textarea {
+    tap-highlight-color: transparent;
+    -webkit-tap-highlight-color: transparent;
+    outline: none;
+    text-transform: none;
+    text-decoration: none;
+    -webkit-appearance: none;
+    background-color: transparent;
+    border: none;
+}
+
+textarea, input {
+    padding: 0;
+    margin: 0;
+}
+
+a:active,
+a:hover {
+    outline: 0;
+}
+
+button,
+input,
+optgroup,
+select,
+textarea {
+    color: inherit;
+    font: inherit;
+    margin: 0;
+}
+
+button {
+    overflow: visible;
+}
+
+button,
+html input[type="button"],
+input[type="reset"],
+input[type="submit"] {
+    -webkit-appearance: button;
+    cursor: pointer;
+}
+
+button[disabled],
+html input[disabled] {
+    cursor: default;
+}
+
+button::-moz-focus-inner,
+input::-moz-focus-inner {
+    border: 0;
+    padding: 0;
+}
+
+input {
+    line-height: normal;
+}
+
+.fr {
+    float: right;
+}
+
+.fl {
+    float: left;
+}
+
+img {
+    position: relative;
+    vertical-align: middle;
+}
+
+.clear {
+    clear: both;
+}

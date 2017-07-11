@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0 user-scalable=no"/>
+    <!--不让 Android 手机识别邮箱-->
+    <meta content="email=no" name="format-detection"/>
+    <!--禁止 iOS 识别长串数字为电话-->
+    <meta content="telephone=no" name="format-detection"/>
+    <!--对不支持viewport的老式设备进行手持设备优化-->
+    <meta name="HandheldFriendly" content="true"/>
+    <meta name="wap-font-scale" content="no">
+    <title>缩放</title>
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/photoclipview.css">
+    <script type='text/javascript' src='//cdn.bootcss.com/jquery/3.1.1/jquery.min.js' charset='utf-8'></script>
+    <script type='text/javascript' src="layer/mobi/toast.js"></script>
+    <script type='text/javascript' src="js/iscroll-zoom.js?v=1"></script>
+    <script type='text/javascript' src="js/hammer.min.js?v=1"></script>
+    <script type='text/javascript' src="js/lrz.all.bundle.js?v=1"></script>
+    <!--改版4：3-->
+    <script type='text/javascript' src="js/PhotoClip_2.js?v=5"></script>
+    <!--<script type='text/javascript' src="js/PhotoClip.js?v=5"></script>-->
+</head>
+<body>
+<div class="clip_layout">
+    <div class="loading1">
+        <div id="clipArea"></div>
+        <div class="clip_tools">
+            <p class="clip_img_icon"><input type="file" class="file"></p>
+
+            <p class="clip_rotate_icon"></p>
+
+            <p class="clip_scale_a_icon"></p>
+
+            <p class="clip_scale_s_icon"></p>
+        </div>
+        <button id="clipBtn">确 定</button>
+    </div>
+</div>
+<div class="img_show">
+    <img class="img" src="" alt="">
+    <button id="complete">重 新 截 取</button>
+</div>
+</body>
+<script>
+    function initClip() {
+        var pc = new PhotoClip('#clipArea', {
+            adaptive: ['80%', '60%'],
+            outputSize: [0, 0],
+            file: '.file',
+            view: '.img_view',
+            ok: '#clipBtn',
+            loadStart: function () {
+                $('.loading1').addClass('load1');
+                $('#clipArea').addClass('loading2');
+            },
+            loadComplete: function () {
+                $('.load1').removeClass('load1');
+                $('.loading2').removeClass('loading2');
+            },
+            done: function (dataURL) {
+                $('.img_show').show();
+                $('.img').attr('src',dataURL);
+            },
+            fail: function (msg) {
+                showToast(msg);
+            }
+        });
+
+        setTap('.clip_rotate_icon', function () {
+            pc.rotate(pc._curAngle + 90, 200);
+            pc.scale(pc._iScroll.scale, 200);
+        });
+        setTap('.clip_scale_a_icon', function () {
+            pc.scale(pc._iScroll.scale + 0.15, 200);
+        });
+        setTap('.clip_scale_s_icon', function () {
+            pc.scale(pc._iScroll.scale - 0.15, 200);
+        });
+        setTap('#complete',function(){
+            $('.img_show').hide();
+        });
+    }
+    function showToast(msg, time, css) {
+        if (layer) {
+            var style = "";
+            layer.open({skin: "msg", style: css ? css : style, content: msg, time: time ? time : 1, shade: false})
+        }
+    }
+    function setTap(obj, callBack) {
+        unbind(obj, 'tap').tap(function (e) {
+            e = e || event;
+            e.preventDefault();
+            e.stopPropagation();
+            if (callBack) {
+                this.callBack = callBack;
+                this.callBack(e);
+            }
+        });
+    }
+    function unbind(obj, types) {
+        return $(obj).unbind(types);
+    }
+    (function ($, undefined) {
+        var INVALIDATE_CLICKS_AFTER_TAP_THRESHOLD = 600;
+        var incrementalElementId = 0;
+        var mutex = 0;
+        $.fn.tap = function (threshold, callback, touchOnly) {
+            if (typeof threshold === "function") {
+                touchOnly = callback;
+                callback = threshold;
+                threshold = 15
+            }
+            if ("ontouchstart" in window) {
+                this.each(function () {
+                    var moveDistance = 0;
+                    var touch = null;
+                    var elementId = ++incrementalElementId;
+                    var startPoint = null;
+                    var touching = false;
+                    var self = this;
+                    var $self = $(this);
+                    var invalidateClicksBefore = null;
+                    $self.click(function () {
+                        if (invalidateClicksBefore != null && Date.now() < invalidateClicksBefore) {
+                            return
+                        } else {
+                            callback.apply(self, arguments)
+                        }
+                    });
+                    $self.bind("touchstart", function (e) {
+                        if (mutex != 0) {
+                            return
+                        } else {
+                            mutex = elementId
+                        }
+                        touching = true;
+                        moveDistance = 0;
+                        if (e.originalEvent.touches && e.originalEvent.touches[0]) {
+                            touch = e.originalEvent.touches[0];
+                            startPoint = {
+                                x: touch.screenX, y: touch.screenY, px: touch.pageX,
+                                py: touch.pageY, cx: touch.clientX, cy: touch.clientY
+                            }
+                        }
+                    });
+                    $self.bind("touchend", function (e) {
+                        if (mutex == elementId) {
+                            mutex = 0
+                        }
+                        if (!touching) {
+                            return
+                        }
+                        touching = false;
+                        if (moveDistance < threshold) {
+                            invalidateClicksBefore = Date.now() + INVALIDATE_CLICKS_AFTER_TAP_THRESHOLD;
+                            e.pageX = startPoint.px;
+                            e.pageY = startPoint.py;
+                            e.clientX = startPoint.cx;
+                            e.clientY = startPoint.cy;
+                            e.screenX = startPoint.x;
+                            e.scrrenY = startPoint.y;
+                            callback.apply(self, arguments)
+                        } else {
+                            $self.trigger("tap-failed")
+                        }
+                    });
+                    $self.bind("touchmove", function (e) {
+                        if (!touching) {
+                            return
+                        }
+                        if (e.originalEvent.touches.length == 0 || startPoint === null) {
+                            return touching = false
+                        }
+                        touch = e.originalEvent.touches[0];
+                        moveDistance = Math.sqrt(Math.pow(touch.screenX - startPoint.x, 2) + Math.pow(touch.screenY - startPoint.y, 2));
+                        if (moveDistance > threshold) {
+                            $self.trigger("exceed-tap-threshold");
+                            touching = false
+                        }
+                    });
+                    $self.bind("touchcancel", function () {
+                        if (mutex == elementId) {
+                            mutex = 0
+                        }
+                        touching = false;
+                        $self.trigger("tap-failed")
+                    })
+                })
+            } else {
+                if (!touchOnly) {
+                    this.click(callback)
+                }
+            }
+            return this
+        }
+    })(window.jQuery || window.$);
+    initClip();
+</script>
+</html>
