@@ -1,5 +1,5 @@
 # PhotoClipView
-<img alt="" class="mini-loader" src="http://data.webjl8.com/forum/201707/05/175930svnvhd7ahdv3hhc8.gif"  />
+<img alt="" class="mini-loader" src="https://github.com/daimashenjing/PhotoClipView/blob/master/Screenshot/1.gif?raw=true"  />
 
 js仿原生切图剪切压缩上传
 
